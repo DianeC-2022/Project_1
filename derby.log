@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Fri Feb 11 04:52:18 CST 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-017e-e869-8c86-0000058fe3f0 
+on database directory C:\Users\dicla\IdeaProjects\pone\metastore_db with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3b192d32 
+Loaded from file:/C:/Users/dicla/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=11.0.14+8-LTS-263
+user.dir=C:\Users\dicla\IdeaProjects\pone
+os.name=Windows 11
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
