@@ -1,8 +1,8 @@
+
 import org.apache.spark.sql.SparkSession
-import scala.collection
+import scala.io.StdIn.readInt
 
 object Main {
-
   def main(args: Array[String]): Unit = {
     // create a spark session
     // for Windows
@@ -10,8 +10,7 @@ object Main {
 
     val spark = SparkSession.builder()
       .appName("HiveTest5")
-      .config("spark.master", "local")
-      .enableHiveSupport()
+      .config("spark.master", "local").enableHiveSupport()
       .getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
 
@@ -24,17 +23,16 @@ object Main {
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_BranchA.txt' OVERWRITE INTO TABLE coffee_Branches")
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_BranchB.txt' INTO TABLE coffee_Branches")
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_BranchC.txt' INTO TABLE coffee_Branches")
-    spark.sql("SELECT * FROM coffee_Branches").tail(20).foreach(row => println(row))
+    spark.sql("SELECT * FROM coffee_Branches")
 
     spark.sql("create table if not exists bev_Conscount(beverage String,count Int) row format delimited fields terminated by ','");
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_ConscountA.txt' OVERWRITE INTO TABLE bev_Conscount")
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_ConscountB.txt' INTO TABLE bev_Conscount")
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_ConscountC.txt' INTO TABLE bev_Conscount")
-    spark.sql("SELECT * FROM bev_Conscount").tail(20).foreach(row => println(row))
+    spark.sql("SELECT * FROM bev_Conscount")
 
     //Problem Scenario 1a
     //What is the total number of consumers for Branch1?
-    val answer1a = 0
     spark.sql("create table if not exists coffee_BranchA(beverage String,branch String) row format delimited fields terminated by ','")
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_BranchA.txt' OVERWRITE INTO TABLE coffee_BranchA")
 
@@ -61,6 +59,7 @@ object Main {
 
     //Problem Scenario 2a
     //What is the most consumed beverage in Branch2?
+
     spark.sql(" select beverage,sum(count) count from ConsBranch1 group by beverage order by count desc limit 1;").show()
 
     //Problem Scenario 2b
@@ -73,10 +72,10 @@ object Main {
 
     //Problem Scenario 3a
     //What are the beverages available on Branch10, Branch8, and Branch1?
-    //spark.sql("Create table if not exists branch9_8_1Beverage (beverage String,branch String")
-    //spark.sql ("insert into table from bev_Conscount where branch = 'branch10' and branch = 'branch8' and branch = 'branch1'")
-    //spark.sql("select*(beverage) from branch9_8_1Beverage order by beverage").show()
-    spark.sql("select distinct beverage from coffee_Branches where branch ='branch10'or branch ='branch8'or branch='branch1'").show()
+    spark.sql("Create table if not exists branch10_8_1Beverage (beverage String,branch String")
+    spark.sql ("insert into table from coffee_Branches.beverage where branch = 'branch10' and branch = 'branch8' and branch = 'branch1'")
+    spark.sql("select * (beverage) from branch10_8_1Beverage order by beverage").show()
+    //spark.sql("select distinct beverage from coffee_Branches JOIN bev_Conscount on(coffee_Branches.beverage group by bev_Conscount.beverage where branch ='branch10'or branch ='branch8'or branch='branch1'").show()
 
     //Problem Scenario 3b
     //What are the common beverages available in Branch 4, Branch 7?
@@ -84,7 +83,6 @@ object Main {
 
     //Problem Scenario 4
     //Create a partition, view for Scenario 3.
-
     spark.sql("CREATE TABLE IF NOT EXISTS PartitionT(beverage STRING) PARTITIONED BY (branch STRING)")
     spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
     spark.sql("INSERT OVERWRITE TABLE PartitionT PARTITION(branch) SELECT beverage,branch from coffee_Branches")
@@ -98,6 +96,8 @@ object Main {
     spark.sql("create table if not exists Q5Delete_Branches_Table(beverage String,branch String) row format delimited fields terminated by ','");
     spark.sql("LOAD DATA LOCAL INPATH 'input/Dataset/Bev_BranchA.txt' OVERWRITE INTO TABLE Q5Delete_Branches_Table")
     spark.sql("CREATE TABLE if not exists Q5Delete_Branches_Table_copy LIKE Q5Delete_Branches_Table")
+    spark.sql("Select * from Q5Delete_Branches_Table").show(3)
+
     //load data into copy table except deleted item
     spark.sql("INSERT INTO Q5Delete_Branches_Table_copy SELECT * FROM Q5Delete_Branches_Table WHERE beverage NOT IN (SELECT beverage FROM Q5Delete_Branches_Table_copy WHERE beverage='Triple_cappuccino')").show()
     //overwrite copy table to original table
